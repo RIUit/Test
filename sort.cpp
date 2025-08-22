@@ -1,6 +1,7 @@
 #include<iostream>
 #include<cstdlib>
 #include<ctime>
+
 using namespace std;
 
 const int MAX = 100;
@@ -23,27 +24,28 @@ void swap(int &a, int &b){
 }
 void selectionSort(int a[], int n){
 	for(int i = 0; i < n - 1; i++){
-		int pos = i;
+		int min_pos = i;
 		for(int j = i + 1; j < n; j++){
-			if(a[j] < a[pos])
-				pos = j;
+			if(a[j] < a[min_pos]){
+				min_pos = j;
+			}
 		}
-		swap(a[i],a[pos]);
+		swap(a[min_pos], a[i]);
+	}
+}
+void bubbleSort(int a[], int n){
+	for(int i = 0; i < n - 1; i++){
+		for(int j = 0; j < n - i - 1; j++){
+			if(a[j] > a[j + 1])
+			 swap(a[j], a[j + 1]);
+		}
 	}
 }
 void interChangeSort(int a[], int n){
 	for(int i = 0; i < n - 1; i++){
-		for(int j = i + 1; j < n; j++){
-			if(a[j] < a[i])
-				swap(a[j], a[i]);
-		}
-	}
-}
-void bubbleSort(int a[], int n){
-	for(int i  = 0; i < n - 1; i++){
-		for(int j = 0; j < n - i - 1; j++){
-			if(a[j] > a[j + 1])
-				swap(a[j], a[j + 1]);
+		for(int j = i + 1; j <n; j++){
+			if(a[i] > a[j])
+				swap(a[i],a[j]);
 		}
 	}
 }
@@ -58,16 +60,17 @@ void insertionSort(int a[], int n){
 	}
 }
 void quickSort(int a[], int left, int right){
-	int m = a[((left+right) / 2)];
+	int mid = a[(left + right) / 2];
 	int i = left, j = right;
 	while(i <= j){
-		while(a[i] < m) i++;
-		while(a[j] > m) j--;
+		while(a[i] < mid) i++;
+		while(a[j] > mid) j--;
 		if(i <= j){
-			swap(a[i],a[j]);
-			i++; j--;
+			swap(a[i], a[j]);
+			i++;j--;
 		}
 	}
+	// j > i
 	if(j > left) quickSort(a,left, j);
 	if(i < right) quickSort(a,i, right);
 }
@@ -75,26 +78,25 @@ void shift(int a[], int i, int n){
 	int j = 2 * i + 1;
 	if(j >= n) return;
 	if(j + 1 < n)
-		if(a[j] < a[j + 1])
+		if(a[j + 1] > a[j])
 			j++;
 	if(a[i] >= a[j]) return;
 	else{
 		swap(a[i], a[j]);
 		shift(a, j, n);
-	}	
+	}
 }
 void heapSort(int a[], int n){
-	for(int i = n / 2 - 1; i >=0; i--){
-		shift(a, i, n);
+	for(int i = n / 2 - 1; i >= 0; i--){
+		shift(a,i,n);
 	}
-	for(int j = n - 1; j >= 0; j--){
-		swap(a[0],a[j]);
-		shift(a, 0, j);
+	for(int right = n - 1; right > 0; right--){
+		swap(a[0], a[right]);
+		shift(a, 0, right);
 	}
 }
 void merge(int a[], int l, int m, int r){
-	int n1 = m - l + 1;
-	int n2 = r - m;
+	int n1 = m - l + 1, n2 = r - m;
 	int *x = new int[n1];
 	int *y = new int[n2];
 	for(int i = 0; i < n1; i++){
@@ -103,19 +105,19 @@ void merge(int a[], int l, int m, int r){
 	for(int i = 0; i < n2; i++){
 		y[i] = a[m + i + 1];
 	}
-	int cnt = l;
+	int index = l;
 	int i = 0, j = 0;
 	while(i < n1 && j < n2){
-		if(x[i] <= y[j]){
-			a[cnt++] = x[i++];
-		}else
-			a[cnt++] = y[j++];
+		if(x[i] <= y[j])
+			a[index++] = x[i++];
+		else
+			a[index++] = y[j++];
 	}
-	while( i < n1){
-		a[cnt++] = x[i++];
+	while(i < n1){
+		a[index++] = x[i++];
 	}
-	while( j < n2){
-		a[cnt++] = y[j++];
+	while(i < n2){
+		a[index++] = y[j++];
 	}
 }
 void mergeSort(int a[], int l, int r){
@@ -123,48 +125,23 @@ void mergeSort(int a[], int l, int r){
 		int m = (l + r) / 2;
 		mergeSort(a, l, m);
 		mergeSort(a, m + 1, r);
-		merge(a,l,m,r);
+		merge(a, l, m, r);
 	}
-	
-}
-//Tim kiem tuan tu
-int search(int a[], int n, int x){
-	for(int i = 0; i < n; i++){
-		if(a[i] == x)
-			return i;
-	}
-	return -1;
-}
-//Tim Kiem nhi phan
-int search2(int a[],int n,int x){
-	int l = 0, r = n - 1;
-	while(l <= r){
-		int m = (l + r) / 2;
-		if(a[m] == x) return m;
-		if(a[m] < x) l = m + 1;
-		else
-			r = m - 1;
-	}
-	return -1;
 }
 int main(){
-	int a[MAX];
+	srand(time(NULL));
 	int n;
-	srand(time(0));
-	cout << "Nhap so luong phan tu: ";
+	int a[MAX];
+	cout << "Nhap n: ";
 	cin >> n;
-	khoiTao(a, n, 10, 50);
-	cout << "Mang khoi tao ban dau: \n";
-	inMang(a,n);
 	
-	cout << "Mang sao khi sap xep: \n";
-	mergeSort(a, 0,n - 1);
-	inMang(a,n);
+	khoiTao(a, n, 1, 50);
+	inMang(a, n);
 	
-	int x;
-	cout << "Nhap so can tim: ";
-	cin >> x;
-	int kq=search(a,n,x);
-	cout << "Ket qua: "<<kq <<endl;
+	cout << "Mang sau khi xep: \n";
+	mergeSort(a, 0, n - 1);
+	inMang(a, n);
+	
+
 	return 0;
 }
